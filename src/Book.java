@@ -2,6 +2,7 @@ public class Book {
     String Title;
     String Descript;
     String Location;
+    CheckOut checkout = new CheckOut();
 
     public Book(String title, String descript, String location) {
         Title = title;
@@ -27,6 +28,8 @@ public class Book {
         return Location;
     }
     public void updateLocation(String location) {Location = location;}
+
+    public CheckOut getCheckout() {return checkout;}
 
 
 }

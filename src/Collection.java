@@ -48,6 +48,15 @@ public class Collection {
     }
 
 
+    public BookGrouper SearchBook(String title) {
+        BookGrouper book = null;
+        for (int i =0; i < ListOfBookGrper.size(); i++) {
+            if (ListOfBookGrper.get(i).getTitle() == title) {
+                book = ListOfBookGrper.get(i);
+            }
+        }
+        return book;
+    }
 
 
 
