@@ -153,6 +153,9 @@ public class Menu {
                 if (Membership.get(i).getUser() == username) {index = i;}
             }
             if (index != -1){
+                Double FeeDue = Membership.get(index).getFeeDue();
+                System.out.println("Fees due are:");
+                System.out.println(FeeDue);
                 Membership.get(index).PayFee();
                 System.out.println("Fees have been paid.");
                 System.out.println("\n");
