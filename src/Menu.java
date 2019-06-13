@@ -3,18 +3,23 @@ import java.util.Scanner;
 
 public class Menu {
     ArrayList<Member> Membership = new ArrayList<>();
+    Member CurrUser;
+    DayCounter Today = new DayCounter(); // was inside main method
 
     public static void main(String args[]){
         System.out.println("Welcome to the library.");
-        DayCounter Today = new DayCounter();
         Menu menu = new Menu();
         Collection library = new Collection(14,0.5);
 
-
         menu.UserLogin(library);
+    }
 
 
 
+
+
+    public DayCounter getToday() {
+        return Today;
     }
 
     // create a new student account
@@ -31,6 +36,7 @@ public class Menu {
         if (used == false){
             Member NewMem = new Member(username);
             Membership.add(NewMem);
+            CurrUser = NewMem;
         }else {
             System.out.println("Username is already in use. Please pick a new username.");
             MemberSetUp();
@@ -48,13 +54,19 @@ public class Menu {
             result = true;
         } else {
             boolean UserInList = false;
+            int index = -1;
             System.out.println("Please type in your username:");
             String res1 = keyboard.nextLine();
             for (int i=0; i<Membership.size();i++) {
-                if (Membership.get(i).getUser() == res1.trim()){UserInList = true;}
+                if (Membership.get(i).getUser() == res1.trim()){
+                    UserInList = true;
+                    index = i;
+                }
             }
-            if (UserInList == true){result = true;}
-            else{
+            if (UserInList == true){
+                result = true;
+                CurrUser = Membership.get(index);
+            }else{
                 System.out.println("You are not a user, please signup for membership.");
                 System.out.println("Do you wish to continue? YES or NO");
                 String res2 = keyboard.nextLine().trim();
@@ -73,7 +85,7 @@ public class Menu {
             this.StaffMenu(collection);
         }else{
             if (this.StudentLogin()) {
-                this.StudentMenu(collection); // student menu? -----------------------------
+                this.StudentMenu(collection,CurrUser); // student menu? -----------------------------
             }else{
                 System.out.println("\n");
                 this.UserLogin(collection);
@@ -157,14 +169,84 @@ public class Menu {
     }
 
 
-    public void StudentMenu(Collection collection){
+    public void StudentMenu(Collection collection,Member student){
+        student.BookDueMessage(this,collection);
         Scanner keyboard = new Scanner(System.in);
         System.out.println("what would you like to do today?");
         System.out.println("Options: CHECKOUT A BOOK, RETURN A BOOK, EXTEND RETURN DATE");
-        String operation = keyboard.nextLine();
-        if (operation == "EXIT"){
+        String operation = keyboard.nextLine().trim();
+        if (operation.equalsIgnoreCase("EXIT")) {
+            CurrUser = null;
             System.out.println("\n");
             this.UserLogin(collection);
+        }else if (operation.equalsIgnoreCase("CHECKOUT A BOOK")){
+            System.out.println("What is the Title of the book you want?");
+            String title = keyboard.nextLine();
+            BookGrouper Bookgrp = collection.SearchBook(title);
+            if (Bookgrp == null) {
+                System.out.println("This book does not exist.");
+                System.out.println("\n");
+                this.StudentMenu(collection,student);
+            }else {
+                collection.SearchBook(title).GetBookFromLib(student);
+                System.out.println("\n");
+                this.StudentMenu(collection,student);
+            }
+
+
+        }else if (operation.equalsIgnoreCase("RETURN A BOOK")){
+            System.out.println("Here are a list of books that can be returned:");
+            CurrUser.BooksInPossession();
+            System.out.println("\n");
+            System.out.println("Which book do you want to return? If no books in your possession write anything");
+            String Title = keyboard.nextLine().trim();
+            if (CurrUser.searchBook(Title) != null){
+                int day = Today.getDay();
+                int month = Today.getMonth();
+                int year = Today.getYear();
+                int TakeoutPeriod = CurrUser.searchBook(Title).getCheckout().getDays().numDays(day,month,year);
+                if (TakeoutPeriod > collection.getReturnPeriod()) {
+                    int DaysLate = TakeoutPeriod - collection.getReturnPeriod();
+                    for (int i=0;i<DaysLate;i++){student.ChargeFee(collection);}
+                }
+                CurrUser.returnBook(Title,collection);
+                this.StudentMenu(collection,student);
+            }else if (Title.equalsIgnoreCase("EXIT")){
+                System.out.println("\n");
+                CurrUser = null;
+                this.UserLogin(collection);
+            }
+            else {
+                System.out.println("Please try again");
+                this.StudentMenu(collection,student);
+            }
+
+        }else if (operation.equalsIgnoreCase("EXTEND RETURN DATE")){
+            System.out.println("Here are a list of books in your possession:");
+            CurrUser.BooksInPossession();
+            System.out.println("\n");
+            System.out.println("Which book do you want to try to extend?");
+            String Title = keyboard.nextLine();
+            if (CurrUser.searchBook(Title) != null) {
+                Book book = CurrUser.searchBook(Title);
+                BookGrouper bookgrp0 = collection.SearchBook(Title);
+                if (CurrUser.searchBook(Title).getCheckout().ExtendBook(bookgrp0,student)){
+                    int day = this.getToday().getDay();
+                    int month = this.getToday().getMonth();
+                    int year = this.getToday().getYear();
+                    book.checkout.getDays().setDate(day,month,year);
+                    System.out.println("Book has been extended");
+                    System.out.println("\n");
+                    this.StudentMenu(collection,student);
+                }else {
+                    System.out.println("\n");
+                    this.StudentMenu(collection,student);
+                }
+            } else {
+                System.out.println("Please try again");
+                System.out.println("\n");
+                this.StudentMenu(collection,student);
+            }
         }
 
     }

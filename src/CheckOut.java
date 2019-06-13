@@ -1,17 +1,12 @@
 public class CheckOut {
     Boolean avail;
     Member currUser;
-    int daysRemaining;
     int numExtensions;
     DayCounter dayCounter;
 
     public CheckOut() {
         avail = true;
         numExtensions = 0;
-    }
-
-    public void setDaysRemaining(Collection collection) {
-        daysRemaining = collection.getReturnPeriod();
     }
 
     public void checkoutBook(Member member, BookGrouper bookGrp, int index){
@@ -50,30 +45,25 @@ public class CheckOut {
     public void ReturnBook(Collection collection) {
         avail = true;
         currUser = null;
-        daysRemaining = collection.getReturnPeriod();
         numExtensions = 0;
         System.out.println("Book has been returned.");
     }
 
-    public void ExtendBook(Collection collection, BookGrouper bookgrp, Member member) {
+    public boolean ExtendBook(BookGrouper bookgrp, Member member) {
+        boolean result = false;
         if ( avail == false && currUser == member){
             if (bookgrp.getWaitlist().size() == 0) {
                 if (numExtensions < 1) {
-                    daysRemaining = collection.getReturnPeriod();
                     numExtensions = 1;
+                    result = true;
                 }else{
                     System.out.println("Please return book once Return Period is done. Then you may check it out again.");
                 }
             }
         }
+        return result;
     }
 
-    public boolean isLate() {
-        boolean late;
-        if (daysRemaining < 0) {late = true;}
-        else{late = false;}
-        return late;
-    }
 
     public boolean isAvail() {return avail;}
     public DayCounter getDays() {return dayCounter;}

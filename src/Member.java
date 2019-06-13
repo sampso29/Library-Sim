@@ -59,6 +59,33 @@ public class Member {
             }
     }
 
+    public Book searchBook(String title) {
+        Book book = null; // assuming a student cant take out more than one copy of a book
+        for (int i=0;i<BookList.size();i++) {
+            if (BookList.get(i).getTitle()== title){
+                book = BookList.get(i);
+            }
+        }
+        return book;
+    }
+
+    public void BookDueMessage(Menu menu, Collection collection){
+        for (int i=0; i<BookList.size();i++) {
+            int day = menu.getToday().getDay();
+            int month = menu.getToday().getMonth();
+            int year = menu.getToday().getYear();
+            if (BookList.get(i).getCheckout().getDays().numDays(day,month,year) > collection.getReturnPeriod()-2){
+                String name = BookList.get(i).getTitle();
+                if (BookList.get(i).getCheckout().getDays().numDays(day,month,year) <= collection.getReturnPeriod()){
+                    int numRem = collection.getReturnPeriod() - BookList.get(i).getCheckout().getDays().numDays(day,month,year);
+                    System.out.println(name+" has "+numRem+" days until its due.");
+                }else{
+                    System.out.println("Book is overdue");
+                }
+            }
+        }
+    }
+
 
 
 
