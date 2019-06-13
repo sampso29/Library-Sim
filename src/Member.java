@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Member {
 
@@ -12,8 +13,12 @@ public class Member {
     public Member(String username) {
         if (username != "none") {
             Username = username;
+
         } else {
             System.out.println("Please pick another Username");
+            Scanner input = new Scanner(System.in);
+            String user = input.nextLine();
+            new Member(user);
         }
 
     }

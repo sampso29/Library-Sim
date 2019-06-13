@@ -3,6 +3,7 @@ public class CheckOut {
     Member currUser;
     int daysRemaining;
     int numExtensions;
+    DayCounter dayCounter;
 
     public CheckOut() {
         avail = true;
@@ -31,6 +32,7 @@ public class CheckOut {
                         avail = false;
                         bookGrp.removeFromWait();
                         member.addBook(bookGrp.getBook(index));
+                        dayCounter = new DayCounter();
                         System.out.println("You have now checked out this book.");
                     }
                 }
@@ -40,6 +42,7 @@ public class CheckOut {
             currUser = member;
             avail = false;
             member.addBook(bookGrp.getBook(index));
+            dayCounter = new DayCounter();
             System.out.println("You have now checked out this book.");
         }
     }
@@ -73,6 +76,7 @@ public class CheckOut {
     }
 
     public boolean isAvail() {return avail;}
+    public DayCounter getDays() {return dayCounter;}
 
 
 

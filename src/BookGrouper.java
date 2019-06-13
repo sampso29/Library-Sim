@@ -15,6 +15,50 @@ public class BookGrouper {
 
     public String getTitle() {return Title;}
 
+    public void updateTitle(String title){
+        System.out.println("What would you like to change the Title to?");
+        Scanner keyboard = new Scanner(System.in);
+        String newTitle = keyboard.nextLine();
+        for (int i=0;i<ListOfBooks.size();i++){
+            ListOfBooks.get(i).updateTitle(newTitle);
+        }
+        Title = newTitle;
+        System.out.println("Title has been changed");
+    }
+
+    public void updateDescription(){
+        System.out.println("What would you like to change the Description to?");
+        Scanner keyboard = new Scanner(System.in);
+        String newDes = keyboard.nextLine();
+        for (int i=0;i<ListOfBooks.size();i++){
+            ListOfBooks.get(i).updateDescript(newDes);
+        }
+        System.out.println("Description has been changed");
+    }
+
+    public void updateLocation(String location,int copies){
+        int copiesChanged = 0;
+        int copiesAvail = 0; // copies available to change
+        for (int i=0;i<ListOfBooks.size();i++){
+            if (ListOfBooks.get(i).getLocation()== location){copiesAvail +=1;}
+        }
+        if (copiesAvail > 0){
+            System.out.println("What location would you like to place these books?");
+            Scanner keyboard = new Scanner(System.in);
+            String newLoc = keyboard.nextLine();
+            while (copiesChanged != copies){
+                for (int i=0;i<ListOfBooks.size();i++) {
+                    if (ListOfBooks.get(i).getLocation()== location){
+                        ListOfBooks.get(i).updateLocation(newLoc);
+                        copiesChanged +=1;
+                    }
+                }
+            }
+        }else {
+            System.out.println("There are not enough copies in the library");
+        }
+    }
+
     public void addCopy(String location){
         if (ListOfBooks.size() > 0){
             String descript = ListOfBooks.get(0).getDescript();
